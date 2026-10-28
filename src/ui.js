@@ -67,7 +67,7 @@ function loadData(d, how) {
   buildSidebar(); $('#empty').hidden = true; $('#progress').hidden = true;
   S.mode = d.meta.fileCount > 600 || d.meta.symbolCount < 3 ? 'files' : 'files'; syncMode();
   rebuild({ fresh: true }); fitView(false); renderPanel();
-  document.title = 'Project Graph — ' + (d.root || 'project');
+  document.title = 'Code Graph — ' + (d.root || 'project');
   applyHash();
 }
 
@@ -888,7 +888,7 @@ async function scanEntries(entries) {
 }
 async function pickFolder() {
   if (window.showDirectoryPicker) {
-    try { const opts = { mode: 'read', id: 'project-graph' }; if (lastDirHandle) opts.startIn = lastDirHandle; const h = await window.showDirectoryPicker(opts); lastDirHandle = h; await scanHandle(h); return; }
+    try { const opts = { mode: 'read', id: 'code-graph' }; if (lastDirHandle) opts.startIn = lastDirHandle; const h = await window.showDirectoryPicker(opts); lastDirHandle = h; await scanHandle(h); return; }
     catch (e) { if (e && e.name === 'AbortError') { $('#progress').hidden = true; return; } console.warn('Directory picker unavailable, falling back', e); $('#progress').hidden = true; }
   }
   $('#fileInput').click();
@@ -916,11 +916,11 @@ function makeSnapshotHtml(withSrc) {
   const html = ORIGINAL_HTML.replace(/<script id="preload" type="application\/json">[\s\S]*?<\/script>/, () => '<script id="preload" type="application/json">' + json + '</script>');
   return html;
 }
-function exportHtml() { if (data) download('project-graph-' + safeName() + '.html', new Blob([makeSnapshotHtml($('#expSource').checked)], { type: 'text/html' })); }
+function exportHtml() { if (data) download('code-graph-' + safeName() + '.html', new Blob([makeSnapshotHtml($('#expSource').checked)], { type: 'text/html' })); }
 function exportPng() {
-  needDraw = false; draw(); cv.toBlob(b => b && download('project-graph-' + safeName() + '.png', b), 'image/png');
+  needDraw = false; draw(); cv.toBlob(b => b && download('code-graph-' + safeName() + '.png', b), 'image/png');
 }
-$('#exportMenu').addEventListener('click', e => { const b = e.target.closest('[data-exp]'); if (!b) return; $('#exportMenu').classList.remove('show'); const k = b.dataset.exp; if (k === 'html') exportHtml(); else if (k === 'json') download('project-graph-' + safeName() + '.json', new Blob([JSON.stringify(data)], { type: 'application/json' })); else if (k === 'png') exportPng(); });
+$('#exportMenu').addEventListener('click', e => { const b = e.target.closest('[data-exp]'); if (!b) return; $('#exportMenu').classList.remove('show'); const k = b.dataset.exp; if (k === 'html') exportHtml(); else if (k === 'json') download('code-graph-' + safeName() + '.json', new Blob([JSON.stringify(data)], { type: 'application/json' })); else if (k === 'png') exportPng(); });
 $('#btnExport').addEventListener('click', e => { e.stopPropagation(); if (data) $('#exportMenu').classList.toggle('show'); });
 
 /* ============================================================

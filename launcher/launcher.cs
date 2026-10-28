@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
-// Portable launcher: carries project-graph.html inside itself, unpacks it to %LOCALAPPDATA%\ProjectGraph
+// Portable launcher: carries code-graph.html inside itself, unpacks it to %LOCALAPPDATA%\CodeGraph
 // and opens it in its own Edge/Chrome app window. No install, no admin rights, no internet.
 static class Launcher
 {
@@ -13,10 +13,10 @@ static class Launcher
     {
         try
         {
-            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ProjectGraph");
+            string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CodeGraph");
             Directory.CreateDirectory(dir);
-            string html = Path.Combine(dir, "project-graph.html");
-            using (Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream("project-graph.html"))
+            string html = Path.Combine(dir, "code-graph.html");
+            using (Stream s = Assembly.GetExecutingAssembly().GetManifestResourceStream("code-graph.html"))
             using (FileStream f = new FileStream(html, FileMode.Create, FileAccess.Write))
                 s.CopyTo(f);
 
@@ -40,7 +40,7 @@ static class Launcher
         }
         catch (Exception e)
         {
-            MessageBox.Show("Could not start Project Graph:\n" + e.Message, "Project Graph");
+            MessageBox.Show("Could not start Code Graph:\n" + e.Message, "Code Graph");
         }
     }
 }

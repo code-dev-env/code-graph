@@ -1,4 +1,4 @@
-/* ===== Project Graph analyzer: shared utilities, comment/string masking, doc extraction, mini YAML ===== */
+/* ===== Code Graph analyzer: shared utilities, comment/string masking, doc extraction, mini YAML ===== */
 const Analyzer = (function () {
 'use strict';
 
