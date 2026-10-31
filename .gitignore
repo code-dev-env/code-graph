@@ -1,7 +1,7 @@
 # Build output
 build/
 code-graph.html
-CodeGraph.exe
+dist/
 
 # Dependencies
 node_modules/
@@ -14,3 +14,6 @@ Thumbs.db
 
 # Logs
 *.log
+.claude/
+CLAUDE.md
+CLAUDE.local.md

@@ -3304,6 +3304,51 @@
         .map((s) => s.trim().toLowerCase())
         .filter(Boolean),
     );
+  // Runs the analyzer in a Web Worker built from the page's own analyzer script, so the UI stays responsive while parsing.
+  // Falls back to the main thread if a worker can't be started.
+  function analyzeInWorker(input, opts) {
+    const onProgress = opts.onProgress;
+    const mainThread = () => Analyzer.analyze(input, opts);
+    return new Promise((resolve, reject) => {
+      let w,
+        started = false;
+      try {
+        const src =
+          $("#analyzer-src").textContent +
+          "\nself.onmessage = async (e) => {" +
+          "  const { input, root, allPaths } = e.data;" +
+          "  try {" +
+          "    const d = await Analyzer.analyze(input, { root, allPaths, onProgress: (m, a, b) => self.postMessage({ progress: [m, a, b] }) });" +
+          "    self.postMessage({ done: d });" +
+          "  } catch (err) { self.postMessage({ error: String((err && err.message) || err) }); }" +
+          "};";
+        const url = URL.createObjectURL(
+          new Blob([src], { type: "text/javascript" }),
+        );
+        w = new Worker(url);
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        mainThread().then(resolve, reject);
+        return;
+      }
+      w.onmessage = (e) => {
+        started = true;
+        const m = e.data;
+        if (m.progress) onProgress(...m.progress);
+        else {
+          w.terminate();
+          if (m.error) reject(new Error(m.error));
+          else resolve(m.done);
+        }
+      };
+      w.onerror = (e) => {
+        w.terminate();
+        if (started) reject(new Error(e.message || "Analysis worker failed"));
+        else mainThread().then(resolve, reject);
+      };
+      w.postMessage({ input, root: opts.root, allPaths: opts.allPaths });
+    });
+  }
   async function analyseItems(items, allPaths, root) {
     try {
       let list = items;
@@ -3338,7 +3383,7 @@
         );
         return;
       }
-      const d = await Analyzer.analyze(input, {
+      const d = await analyzeInWorker(input, {
         root,
         allPaths,
         onProgress: (m, a, b) => progress(m, a, b),

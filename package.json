@@ -1,0 +1,47 @@
+{
+  "name": "code-graph",
+  "version": "1.0.0",
+  "description": "Code Graph - an interactive map of how your code connects",
+  "main": "main.js",
+  "scripts": {
+    "html": "node build.js",
+    "start": "node build.js && electron .",
+    "dist": "node build.js && electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "local.codegraph.app",
+    "productName": "Code Graph",
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist",
+      "buildResources": "launcher"
+    },
+    "files": [
+      "main.js",
+      "code-graph.html",
+      "launcher/icon.ico",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable",
+        "nsis"
+      ],
+      "icon": "launcher/icon.ico",
+      "signExecutable": false
+    },
+    "portable": {
+      "artifactName": "CodeGraph-Portable.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "CodeGraph-Setup.exe"
+    }
+  }
+}

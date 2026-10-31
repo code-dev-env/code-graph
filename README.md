@@ -23,7 +23,7 @@ JavaScript, TypeScript, React, Vue 3, Node.js, Python, Rust, PostgreSQL / SQL, D
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/)
-- Windows, to build the standalone launcher (the C# compiler ships with Windows)
+- Windows, to build the desktop app (Electron and electron-builder are installed by `build.bat`)
 
 ### Build
 
@@ -34,7 +34,10 @@ build.bat
 This produces:
 
 - `code-graph.html`: the complete application as a single self-contained file. Open it in a Chromium-based browser (Edge or Chrome).
-- `CodeGraph.exe`: a portable launcher that embeds the application and opens it in its own app window. No installation or administrator rights needed.
+- `dist/CodeGraph-Portable.exe`: a portable desktop app. No installation or administrator rights needed.
+- `dist/CodeGraph-Setup.exe`: an installer (per-user, no administrator rights needed) with a Start Menu shortcut and an uninstall entry.
+
+The desktop app is an Electron window around the same page, so it has its own profile, no browser sign-in and no network access. To run it without packaging, use `npm start`.
 
 To build only the HTML file on any platform:
 
@@ -44,7 +47,7 @@ node build.js
 
 ### Usage
 
-1. Open `code-graph.html` or run `CodeGraph.exe`.
+1. Open `code-graph.html` or run `CodeGraph-Portable.exe` (or the installed Code Graph).
 2. Select a project folder, or drag and drop one onto the page.
 3. Explore the graph.
 
@@ -57,15 +60,17 @@ node build.js
 | `/` | Search |
 | `F` | Fit graph to screen |
 | `P` | Pin or unpin the selected node |
+| `+` / `-` | Zoom in / out |
 | `Esc` | Clear selection |
 
 ## Project structure
 
 ```
 build.js        Bundles src/ into a single HTML file
-build.bat       Runs build.js and compiles the Windows launcher
+build.bat       Runs build.js and packages the Electron app into dist/
+main.js         Electron main process (opens code-graph.html)
 src/            Analyzer modules, UI, template and styles
-launcher/       Windows launcher source and icon
+launcher/       App icon
 ```
 
 ## License
